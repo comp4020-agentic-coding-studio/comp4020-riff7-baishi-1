@@ -316,3 +316,63 @@ describe("cancelling a reschedule", () => {
     expect(html).not.toContain("to be cancelled");
   });
 });
+
+describe("room clashes", () => {
+  // Every standing slot shares one room, so a reschedule can land two
+  // groups in the same room at the same time. The roster already knows
+  // every session's room and time for every week; it should refuse to
+  // double-book, and say who's already there.
+  it("rejects a reschedule that overlaps another group in the same room", async () => {
+    const res = await post(
+      "/api/exceptions",
+      new URLSearchParams({
+        critGroupId: "4", // dachi, standing Wed 10:30–12:00
+        week: "10",
+        day: "Wed",
+        startTime: "09:30", // overlaps baishi's standing Wed 09:00–10:30
+        endTime: "11:00",
+        room: "", // falls back to Room 4.03, same as baishi
+        reason: "clash probe",
+      }),
+    );
+    expect(res.status).toBe(303);
+    const location = decodeURIComponent(res.headers.get("location") ?? "");
+    expect(location).toMatch(/^\/\?error=/);
+    expect(location).toContain("Baishi");
+
+    const html = await (await fetch(baseUrl)).text();
+    expect(html).not.toContain("clash probe");
+  });
+
+  it("allows the same slot in a different room", async () => {
+    const res = await post(
+      "/api/exceptions",
+      new URLSearchParams({
+        critGroupId: "4",
+        week: "10",
+        day: "Wed",
+        startTime: "09:30",
+        endTime: "11:00",
+        room: "Marie Reay Building (155), Room 3.05",
+        reason: "other room probe",
+      }),
+    );
+    expect(res.headers.get("location")).toBe("/");
+  });
+
+  it("allows back-to-back sessions in the same room", async () => {
+    const res = await post(
+      "/api/exceptions",
+      new URLSearchParams({
+        critGroupId: "6", // liuru, standing Wed 15:30–17:00
+        week: "12",
+        day: "Wed",
+        startTime: "12:00", // dachi ends 12:00 here
+        endTime: "13:30",
+        room: "",
+        reason: "back-to-back probe",
+      }),
+    );
+    expect(res.headers.get("location")).toBe("/");
+  });
+});
