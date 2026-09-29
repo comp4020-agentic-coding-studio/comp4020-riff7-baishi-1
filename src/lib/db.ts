@@ -188,6 +188,22 @@ export function addException(input: AddExceptionInput): Exception {
   const reason = input.reason.trim();
   if (!reason) throw new ValidationError("a reason is required");
 
+  // A room holds one group at a time. Check against every other group's
+  // effective session that week — standing slot or its own exception — so a
+  // move can't land on top of one. Back-to-back (one ends as the next
+  // starts) is fine.
+  const room = input.room.trim() || group.room;
+  for (const other of listRoster()) {
+    if (other.id === group.id) continue;
+    const s = other.sessions.find((x) => x.week === input.week);
+    if (!s || s.room !== room || s.day !== input.day) continue;
+    if (input.startTime < s.endTime && s.startTime < input.endTime) {
+      throw new ValidationError(
+        `${room} is taken by ${other.name} ${s.day} ${s.startTime}–${s.endTime} in week ${input.week}`,
+      );
+    }
+  }
+
   const existing = db
     .select()
     .from(exceptions)
