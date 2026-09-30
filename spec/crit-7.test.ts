@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, inject, it } from "vitest";
 import { createDirtyTracker, createReconnectGate } from "../src/lib/live-reload";
 import { sessionDate } from "../src/lib/db";
+import { initialMonday } from "../src/lib/calendar";
 
 // This week's brief: model a slice of a real ANU system, wired end to end,
 // with a core flow that survives a reload. The roster's core flow is
@@ -374,5 +375,27 @@ describe("room clashes", () => {
       }),
     );
     expect(res.headers.get("location")).toBe("/");
+  });
+});
+
+describe("the week calendar", () => {
+  const weeks = [
+    { week: 1, monday: "2026-07-27" },
+    { week: 2, monday: "2026-08-03" },
+  ];
+
+  it("opens on the week containing today, clamped to the semester", () => {
+    expect(initialMonday(weeks, "2026-08-05")).toBe("2026-08-03");
+    expect(initialMonday(weeks, "2026-01-01")).toBe("2026-07-27");
+    expect(initialMonday(weeks, "2027-01-01")).toBe("2026-08-03");
+  });
+
+  it("serves the calendar page with every group's sessions as island props", async () => {
+    const res = await fetch(new URL("/calendar/", baseUrl));
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain("astro-island");
+    // week 9's real ACT Labour Day reschedule, derived from the week's Monday
+    expect(html).toContain("2026-10-06");
   });
 });

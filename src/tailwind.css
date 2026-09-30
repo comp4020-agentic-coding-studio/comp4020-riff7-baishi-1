@@ -1,0 +1,22 @@
+/* Tailwind for the calendar island only. Preflight (the global reset) is
+   deliberately left out so it can't override the ANU styles in styles.css. */
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css" layer(utilities);
+
+@theme inline {
+  --color-background: #fff;
+  --color-foreground: var(--anu-charcoal);
+  --color-primary: var(--anu-gold);
+  --color-primary-foreground: var(--anu-charcoal);
+  --color-muted: var(--anu-grey-light);
+  --color-muted-foreground: #595959;
+  --color-accent: var(--anu-gold-tint);
+  --color-accent-foreground: var(--anu-charcoal);
+  --color-popover: #fff;
+  --color-popover-foreground: var(--anu-charcoal);
+  --color-border: var(--anu-border);
+  --color-ring: var(--anu-gold);
+  --radius-lg: 16px;
+  --radius-md: 10px;
+  --radius-sm: 6px;
+}

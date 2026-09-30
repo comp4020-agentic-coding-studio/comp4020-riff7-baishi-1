@@ -1,0 +1,61 @@
+---
+import CritCalendar from "../components/CritCalendar";
+import { initialMonday } from "../lib/calendar";
+import { listRoster, listWeeks, sessionDate } from "../lib/db";
+import "../styles.css";
+import "../tailwind.css";
+
+// A Google-Calendar-style week view of the same roster. Read-only: the data
+// comes from the server as props (dates derived via sessionDate, never
+// stored); rescheduling stays on the roster page's plain forms, so the
+// write path still needs no client JS.
+const weeks = listWeeks();
+const events = listRoster().flatMap((group, i) =>
+  group.sessions.map((s) => ({
+    id: `${group.agent}-w${s.week}`,
+    title: group.name,
+    start: `${s.date}T${s.startTime}:00`,
+    end: `${s.date}T${s.endTime}:00`,
+    extendedProps: {
+      agent: group.agent,
+      tutor: group.tutorName,
+      room: s.room,
+      week: s.week,
+      reason: s.reason,
+      color: i,
+    },
+  })),
+);
+const today = new Date().toISOString().slice(0, 10);
+const lastFriday = sessionDate(weeks[weeks.length - 1].monday, "Fri");
+const dayAfter = (iso: string) => new Date(Date.parse(`${iso}T00:00:00Z`) + 86400000).toISOString().slice(0, 10);
+---
+
+<!doctype html>
+<html lang="en-AU">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="Week-by-week calendar of every crit group's session, with rescheduled sessions marked." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>Crit calendar</title>
+  </head>
+  <body>
+    <nav aria-label="site">
+      <a href="/">Roster</a>
+      <a href="/calendar/">Calendar</a>
+      <a href="/readme/">About</a>
+    </nav>
+    <main class="wide">
+      <h1>Crit calendar</h1>
+      <CritCalendar
+        client:load
+        events={events}
+        initialDate={initialMonday(weeks, today)}
+        validStart={weeks[0].monday}
+        validEnd={dayAfter(lastFriday)}
+      />
+      <p><a href="/">Reschedule a session</a> on the roster page.</p>
+    </main>
+  </body>
+</html>

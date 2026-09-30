@@ -1,23 +1,116 @@
+/*
+ * ANU look, taken from anu.edu.au's own published styles:
+ *  - Typeface: Public Sans (ANU's official brand typeface, Google web font)
+ *  - Palette: ANU gold #be830e, gold tint #f5edde, charcoal #262626, greys
+ *  - Cards: 16px radius, soft shadow, 1px #e2e2e2 border
+ * Gold is an accent (rules, borders, focus, buttons with dark text), never
+ * body-text colour: gold on white is only ~3.4:1, so text stays charcoal.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,600;0,700;1,400&display=swap");
+
+:root {
+  --anu-gold: #be830e;
+  --anu-gold-tint: #f5edde;
+  --anu-gold-dark: #8a5f08; /* 5.4:1 on white — safe for link text */
+  --anu-charcoal: #262626;
+  --anu-grey-dark: #7d7d7d;
+  --anu-grey: #c6c6c6;
+  --anu-grey-light: #e6e6e6;
+  --anu-border: #e2e2e2;
+  --anu-error: #a4123f;
+  --anu-radius: 16px;
+  --anu-shadow: 0 4px 8px rgb(37 37 37 / 10%);
+  --anu-shadow-hover: 0 8px 16px rgb(37 37 37 / 12%);
+}
+
 body {
   margin: 0;
-  padding: 2rem;
-  font-family: system-ui, sans-serif;
+  font-family: "Public Sans", system-ui, sans-serif;
   line-height: 1.6;
-  color: #1a1a1a;
+  color: var(--anu-charcoal);
+  background: #fff;
+}
+
+/* Charcoal masthead with the gold rule ANU uses under its header */
+body > nav {
+  display: flex;
+  gap: 1.5rem;
+  padding: 1rem 2rem;
+  background: var(--anu-charcoal);
+  border-bottom: 4px solid var(--anu-gold);
+}
+
+body > nav a {
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  padding-block: 0.25rem;
+  border-bottom: 2px solid transparent;
+}
+
+body > nav a:hover {
+  border-bottom-color: var(--anu-gold);
 }
 
 main {
-  max-width: 40rem;
+  max-width: 44rem;
   margin: 0 auto;
+  padding: 2rem;
 }
 
-nav {
-  display: flex;
-  gap: 1rem;
+h1,
+h2 {
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+h1 {
+  font-size: 2.25rem;
+  margin-block: 0 1rem;
+  padding-block-end: 0.5rem;
+  border-bottom: 3px solid var(--anu-gold);
+}
+
+h2 {
+  font-size: 1.4rem;
+  margin-block: 0 0.5rem;
 }
 
 a {
-  color: #0b5fff;
+  color: var(--anu-gold-dark);
+  text-underline-offset: 0.2em;
+}
+
+a:hover {
+  color: var(--anu-charcoal);
+}
+
+:focus-visible {
+  outline: 3px solid var(--anu-gold);
+  outline-offset: 2px;
+}
+
+code {
+  background: var(--anu-gold-tint);
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+
+/* Each crit group is an ANU-style card */
+section {
+  margin-block: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: #fff;
+  border: 1px solid var(--anu-border);
+  border-left: 6px solid var(--anu-gold);
+  border-radius: var(--anu-radius);
+  box-shadow: var(--anu-shadow);
+  transition: box-shadow 0.15s;
+}
+
+section:hover {
+  box-shadow: var(--anu-shadow-hover);
 }
 
 form {
@@ -33,46 +126,65 @@ select {
   flex: 1;
   min-width: min(12rem, 100%);
   max-width: 100%;
-  padding: 0.4rem 0.6rem;
+  padding: 0.5rem 0.75rem;
   font: inherit;
+  color: inherit;
+  background: #fff;
+  border: 1px solid var(--anu-grey-dark);
+  border-radius: 8px;
 }
 
-button {
+/* ANU buttons: gold fill with charcoal text (never white on gold) */
+form button {
   max-width: 100%;
-  padding: 0.4rem 1rem;
+  padding: 0.5rem 1.25rem;
   font: inherit;
+  font-weight: 600;
+  color: var(--anu-charcoal);
+  background: var(--anu-gold);
+  border: 2px solid var(--anu-gold);
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background: var(--anu-charcoal);
+  border-color: var(--anu-charcoal);
+  color: #fff;
 }
 
 fieldset {
   min-width: 0;
-  border: 1px solid #ccc;
-  border-radius: 0.3rem;
-  padding: 1rem;
+  padding: 1.25rem;
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: center;
+  background: var(--anu-gold-tint);
+  border: 1px solid var(--anu-gold);
+  border-radius: var(--anu-radius);
 }
 
 legend {
-  font-weight: 600;
-  padding-inline: 0.4rem;
+  font-weight: 700;
+  padding-inline: 0.5rem;
 }
 
 .error {
-  color: #a4123f;
+  padding: 0.75rem 1rem;
+  color: var(--anu-error);
   font-weight: 600;
+  background: #fbeaf0;
+  border-left: 6px solid var(--anu-error);
+  border-radius: 8px;
 }
 
 .notice {
-  color: #0b5fff;
+  padding: 0.75rem 1rem;
   font-weight: 600;
-}
-
-section {
-  margin-block: 1.5rem;
-  padding-block-start: 1rem;
-  border-top: 1px solid #ddd;
+  background: var(--anu-gold-tint);
+  border-left: 6px solid var(--anu-gold);
+  border-radius: 8px;
 }
 
 li form {
@@ -81,5 +193,71 @@ li form {
 }
 
 li button {
-  padding: 0.1rem 0.5rem;
+  padding: 0.15rem 0.85rem;
+  font-size: 0.9rem;
+  background: transparent;
+  color: var(--anu-charcoal);
+  border-color: var(--anu-charcoal);
+}
+
+@media (max-width: 40rem) {
+  body > nav,
+  main {
+    padding-inline: 1rem;
+  }
+}
+
+/* ---- Calendar: FullCalendar week grid themed for ANU ---- */
+main.wide {
+  max-width: 72rem;
+}
+
+.crit-cal {
+  --fc-border-color: var(--anu-border);
+  --fc-today-bg-color: #fdf9f0;
+  --fc-now-indicator-color: var(--anu-gold);
+  --fc-small-font-size: 0.75rem;
+  --fc-event-border-color: transparent;
+  padding: 1rem;
+  background: #fff;
+  border: 1px solid var(--anu-border);
+  border-radius: var(--anu-radius);
+  box-shadow: var(--anu-shadow);
+  font-family: inherit;
+}
+
+.crit-cal .fc-col-header-cell-cushion {
+  color: var(--anu-charcoal);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 0.5rem;
+}
+
+.crit-cal .fc-day-today .fc-col-header-cell-cushion {
+  background: var(--anu-gold);
+  border-radius: 999px;
+  padding-inline: 0.9rem;
+}
+
+.crit-cal .fc-timegrid-slot-label-cushion {
+  font-size: 0.7rem;
+  color: #595959;
+}
+
+.crit-cal .fc-event {
+  background: transparent;
+  box-shadow: none;
+}
+
+.crit-cal .fc-event:focus-visible,
+.crit-cal .fc-event button:focus-visible {
+  outline: 3px solid var(--anu-gold);
+}
+
+.crit-cal .fc-v-event .fc-event-main {
+  padding: 0;
+}
+
+.crit-cal .fc-timegrid-event-harness-inset .fc-timegrid-event {
+  box-shadow: 0 0 0 1px #fff;
 }
