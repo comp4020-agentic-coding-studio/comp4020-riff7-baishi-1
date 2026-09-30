@@ -21,41 +21,156 @@
   --anu-radius: 16px;
   --anu-shadow: 0 4px 8px rgb(37 37 37 / 10%);
   --anu-shadow-hover: 0 8px 16px rgb(37 37 37 / 12%);
+
+  /* Semantic roles: these are what the theme switch changes */
+  --bg: #faf8f4;
+  --surface: #fff;
+  --text: #262626;
+  --text-soft: var(--text-soft);
+  --text-muted: var(--text-muted);
+  --masthead: #262626;
+  --field-border: #7d7d7d;
+  --error-bg: #fbeaf0;
+  --today-bg: #fdf9f0;
+  --hover-bg: #262626;
+  --hover-fg: #fff;
+  color-scheme: light;
 }
+
+/* Dark theme: charcoal surfaces, gold stays the accent. Link/label gold is
+   lifted to #e3b04b (8.9:1 on the page background) since #8a5f08 would fail. */
+:root[data-theme="dark"] {
+  --anu-gold-tint: #2f2718;
+  --anu-gold-dark: #e3b04b;
+  --anu-grey-light: #333;
+  --anu-border: #3a3a3a;
+  --anu-error: #ff8fa9;
+  --anu-shadow: 0 4px 8px rgb(0 0 0 / 40%);
+  --anu-shadow-hover: 0 8px 16px rgb(0 0 0 / 50%);
+  --bg: #141414;
+  --surface: #1f1f1f;
+  --text: #ececec;
+  --text-soft: #cfcfcf;
+  --text-muted: #a8a8a8;
+  --masthead: #0d0d0d;
+  --field-border: #7a7a7a;
+  --error-bg: #3a1622;
+  --today-bg: #262010;
+  --hover-bg: #ececec;
+  --hover-fg: #141414;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   font-family: "Public Sans", system-ui, sans-serif;
   line-height: 1.6;
-  color: var(--anu-charcoal);
-  background: #fff;
+  color: var(--text);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Charcoal masthead with the gold rule ANU uses under its header */
-body > nav {
-  display: flex;
-  gap: 1.5rem;
-  padding: 1rem 2rem;
-  background: var(--anu-charcoal);
+/* ---- Masthead: charcoal bar with the gold rule ANU uses under its header ---- */
+.masthead {
+  background: var(--masthead);
   border-bottom: 4px solid var(--anu-gold);
 }
 
-body > nav a {
+.masthead-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 2rem;
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 0.85rem 2rem;
+}
+
+.brand {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  color: #fff;
+  text-decoration: none;
+}
+
+.brand:hover { color: #fff; }
+
+.brand-mark {
+  padding: 0.15rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--anu-charcoal);
+  background: var(--anu-gold);
+  border-radius: 4px;
+}
+
+.brand-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.masthead nav {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.masthead nav a {
+  padding: 0.4rem 0.9rem;
   color: #fff;
   font-weight: 600;
   text-decoration: none;
-  padding-block: 0.25rem;
-  border-bottom: 2px solid transparent;
+  border-radius: 999px;
+  transition: background 0.15s;
 }
 
-body > nav a:hover {
-  border-bottom-color: var(--anu-gold);
+.masthead nav a:hover {
+  color: #fff;
+  background: rgb(255 255 255 / 14%);
 }
 
+.masthead nav a[aria-current="page"] {
+  color: var(--anu-charcoal);
+  background: var(--anu-gold);
+}
+
+/* ---- Page frame ---- */
 main {
   max-width: 44rem;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2.5rem 2rem 4rem;
+}
+
+main.wide {
+  max-width: 72rem;
+}
+
+.page-head {
+  margin-block-end: 2rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--anu-gold-dark);
+}
+
+.lede {
+  max-width: 48rem;
+  margin: 0;
+  font-size: 1.05rem;
+  color: var(--text-soft);
+}
+
+.page-foot {
+  margin-block-start: 1.5rem;
 }
 
 h1,
@@ -65,15 +180,30 @@ h2 {
 }
 
 h1 {
-  font-size: 2.25rem;
-  margin-block: 0 1rem;
-  padding-block-end: 0.5rem;
-  border-bottom: 3px solid var(--anu-gold);
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  margin-block: 0 0.75rem;
+  letter-spacing: -0.01em;
+}
+
+.page-head h1::after {
+  content: "";
+  display: block;
+  width: 4rem;
+  height: 4px;
+  margin-block-start: 0.6rem;
+  background: var(--anu-gold);
+  border-radius: 2px;
 }
 
 h2 {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   margin-block: 0 0.5rem;
+}
+
+/* README page: h1 keeps the full-width gold rule */
+main:not(.wide) > h1 {
+  padding-block-end: 0.5rem;
+  border-bottom: 3px solid var(--anu-gold);
 }
 
 a {
@@ -82,7 +212,7 @@ a {
 }
 
 a:hover {
-  color: var(--anu-charcoal);
+  color: var(--text);
 }
 
 :focus-visible {
@@ -97,84 +227,196 @@ code {
   font-size: 0.9em;
 }
 
-/* Each crit group is an ANU-style card */
-section {
-  margin-block: 1.5rem;
+.muted {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+/* ---- Roster: responsive grid of group cards ---- */
+.groups {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(21rem, 100%), 1fr));
+  gap: 1.25rem;
+  margin-block: 1.5rem 2.5rem;
+}
+
+.groups section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin: 0;
   padding: 1.25rem 1.5rem;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--anu-border);
-  border-left: 6px solid var(--anu-gold);
+  border-top: 5px solid var(--anu-gold);
   border-radius: var(--anu-radius);
   box-shadow: var(--anu-shadow);
-  transition: box-shadow 0.15s;
+  transition: box-shadow 0.15s, transform 0.15s;
 }
 
-section:hover {
+.groups section:hover {
   box-shadow: var(--anu-shadow-hover);
+  transform: translateY(-2px);
 }
 
-form {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-  margin-block: 1.5rem;
+.groups h2 {
+  margin: 0;
 }
 
+.slot {
+  display: grid;
+  gap: 0.1rem;
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: var(--anu-gold-tint);
+  border-radius: 10px;
+}
+
+.slot-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--anu-gold-dark);
+}
+
+.slot-time {
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.slot-meta {
+  font-size: 0.9rem;
+  color: var(--text-soft);
+}
+
+.exceptions {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.exceptions li {
+  display: grid;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--anu-gold);
+  border-radius: 10px;
+}
+
+.pill {
+  justify-self: start;
+  padding: 0.05rem 0.6rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--anu-charcoal);
+  background: var(--anu-gold);
+  border-radius: 999px;
+}
+
+.exc-when { font-weight: 600; }
+.exc-reason { font-size: 0.9rem; font-style: italic; color: var(--text-soft); }
+
+/* ---- Forms ---- */
 input,
 select {
-  flex: 1;
-  min-width: min(12rem, 100%);
-  max-width: 100%;
-  padding: 0.5rem 0.75rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.6rem 0.75rem;
   font: inherit;
   color: inherit;
-  background: #fff;
-  border: 1px solid var(--anu-grey-dark);
+  background: var(--surface);
+  border: 1px solid var(--field-border);
   border-radius: 8px;
+}
+
+input:hover,
+select:hover {
+  border-color: var(--text);
+}
+
+label {
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 /* ANU buttons: gold fill with charcoal text (never white on gold) */
 form button {
   max-width: 100%;
-  padding: 0.5rem 1.25rem;
+  padding: 0.6rem 1.5rem;
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
   color: var(--anu-charcoal);
   background: var(--anu-gold);
   border: 2px solid var(--anu-gold);
   border-radius: 999px;
   cursor: pointer;
+  transition: background 0.15s, color 0.15s;
 }
 
 form button:hover {
-  background: var(--anu-charcoal);
-  border-color: var(--anu-charcoal);
-  color: #fff;
+  background: var(--hover-bg);
+  border-color: var(--hover-bg);
+  color: var(--hover-fg);
 }
 
-fieldset {
+.exceptions form {
+  margin-block-start: 0.4rem;
+}
+
+.exceptions button {
+  padding: 0.25rem 0.9rem;
+  font-size: 0.85rem;
+  background: transparent;
+  color: var(--text);
+  border-color: var(--text);
+}
+
+.reschedule {
+  max-width: 48rem;
+  margin-inline: auto;
+}
+
+.reschedule fieldset {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(12rem, 100%), 1fr));
+  gap: 1rem;
   min-width: 0;
-  padding: 1.25rem;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
-  background: var(--anu-gold-tint);
-  border: 1px solid var(--anu-gold);
+  margin: 0;
+  padding: 1.5rem 1.75rem 1.75rem;
+  background: var(--surface);
+  border: 1px solid var(--anu-border);
+  border-top: 5px solid var(--anu-gold);
   border-radius: var(--anu-radius);
+  box-shadow: var(--anu-shadow);
 }
 
-legend {
+.reschedule legend {
+  padding: 0 0.5rem;
+  font-size: 1.3rem;
   font-weight: 700;
-  padding-inline: 0.5rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.3rem;
+}
+
+.reschedule .span-2 {
+  grid-column: 1 / -1;
+}
+
+.reschedule fieldset > button {
+  justify-self: start;
 }
 
 .error {
   padding: 0.75rem 1rem;
   color: var(--anu-error);
   font-weight: 600;
-  background: #fbeaf0;
+  background: var(--error-bg);
   border-left: 6px solid var(--anu-error);
   border-radius: 8px;
 }
@@ -187,39 +429,24 @@ legend {
   border-radius: 8px;
 }
 
-li form {
-  display: block;
-  margin: 0.4rem 0 0;
-}
-
-li button {
-  padding: 0.15rem 0.85rem;
-  font-size: 0.9rem;
-  background: transparent;
-  color: var(--anu-charcoal);
-  border-color: var(--anu-charcoal);
-}
-
 @media (max-width: 40rem) {
-  body > nav,
+  .masthead-inner,
   main {
     padding-inline: 1rem;
   }
 }
 
 /* ---- Calendar: FullCalendar week grid themed for ANU ---- */
-main.wide {
-  max-width: 72rem;
-}
-
 .crit-cal {
   --fc-border-color: var(--anu-border);
-  --fc-today-bg-color: #fdf9f0;
+  --fc-today-bg-color: var(--today-bg);
+  --fc-page-bg-color: var(--surface);
+  --fc-neutral-bg-color: var(--anu-grey-light);
   --fc-now-indicator-color: var(--anu-gold);
   --fc-small-font-size: 0.75rem;
   --fc-event-border-color: transparent;
   padding: 1rem;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--anu-border);
   border-radius: var(--anu-radius);
   box-shadow: var(--anu-shadow);
@@ -227,13 +454,14 @@ main.wide {
 }
 
 .crit-cal .fc-col-header-cell-cushion {
-  color: var(--anu-charcoal);
+  color: var(--text);
   text-decoration: none;
   font-weight: 600;
   padding: 0.5rem;
 }
 
 .crit-cal .fc-day-today .fc-col-header-cell-cushion {
+  color: var(--anu-charcoal);
   background: var(--anu-gold);
   border-radius: 999px;
   padding-inline: 0.9rem;
@@ -241,7 +469,7 @@ main.wide {
 
 .crit-cal .fc-timegrid-slot-label-cushion {
   font-size: 0.7rem;
-  color: #595959;
+  color: var(--text-muted);
 }
 
 .crit-cal .fc-event {
@@ -259,5 +487,70 @@ main.wide {
 }
 
 .crit-cal .fc-timegrid-event-harness-inset .fc-timegrid-event {
-  box-shadow: 0 0 0 1px #fff;
+  box-shadow: 0 0 0 1px var(--surface);
+}
+
+/* ---- Theme toggle in the masthead ---- */
+.masthead-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.theme-toggle {
+  display: inline-grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  color: #fff;
+  background: transparent;
+  border: 2px solid rgb(255 255 255 / 45%);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.theme-toggle:hover {
+  background: rgb(255 255 255 / 14%);
+  border-color: #fff;
+}
+
+.theme-toggle svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.theme-toggle .icon-sun { display: none; }
+:root[data-theme="dark"] .theme-toggle .icon-sun { display: block; }
+:root[data-theme="dark"] .theme-toggle .icon-moon { display: none; }
+
+/* Calendar toolbar buttons (shadcn's variant classes don't resolve here) */
+.crit-cal button[data-slot="button"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--field-border);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.crit-cal button[data-slot="button"]:hover {
+  background: var(--anu-gold-tint);
+}
+
+/* Badge inside the event popover */
+[data-slot="badge"] {
+  padding: 0.05rem 0.6rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--anu-charcoal);
+  background: var(--anu-gold);
+  border-radius: 999px;
+  white-space: nowrap;
 }

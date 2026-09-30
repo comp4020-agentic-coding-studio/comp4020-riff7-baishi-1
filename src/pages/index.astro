@@ -1,5 +1,7 @@
 ---
 import { listRoster, listWeeks } from "../lib/db";
+import ThemeHead from "../components/ThemeHead.astro";
+import SiteNav from "../components/SiteNav.astro";
 import "../styles.css";
 
 const roster = listRoster();
@@ -17,24 +19,24 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
       name="description"
       content="This course's crit-group roster: standing weekly slots and per-week reschedule exceptions, persisted in SQLite and live-synced across tabs."
     />
+    <ThemeHead />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>Crit roster</title>
   </head>
   <body>
-    <nav aria-label="site">
-      <a href="/">Roster</a>
-      <a href="/calendar/">Calendar</a>
-      <a href="/readme/">About</a>
-    </nav>
-    <main>
-      <h1>Crit roster</h1>
-      <p>
-        Every crit group's standing weekly slot, and the exceptions that
-        replace it for one teaching week at a time — rescheduling a session
-        here writes a row to SQLite instead of hand-editing the course
-        website's <code>api/crit-groups.json</code>. Open this page in two
-        tabs: rescheduling in one updates the other over the live stream.
-      </p>
+    <SiteNav current="roster" />
+    <main class="wide">
+      <div class="page-head">
+        <p class="eyebrow">Semester schedule</p>
+        <h1>Crit roster</h1>
+        <p class="lede">
+          Every crit group's standing weekly slot, and the exceptions that
+          replace it for one teaching week at a time — rescheduling a session
+          here writes a row to SQLite instead of hand-editing the course
+          website's <code>api/crit-groups.json</code>. Open this page in two
+          tabs: rescheduling in one updates the other over the live stream.
+        </p>
+      </div>
 
       {error && <p class="error" role="alert">{error}</p>}
       <p id="stale-notice" class="notice" role="status" hidden>
@@ -42,79 +44,100 @@ const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri"];
         reload when you're ready to see the update.
       </p>
 
-      {
-        roster.map((group) => {
-          const exceptionSessions = group.sessions.filter((s) => s.exceptionId !== null);
-          return (
-            <section aria-labelledby={`group-${group.agent}`}>
-              <h2 id={`group-${group.agent}`}>{group.name}</h2>
-              <p>
-                Standing slot: every {group.day} {group.startTime}–{group.endTime} ·{" "}
-                {group.tutorName} · {group.room}
-              </p>
-              {exceptionSessions.length === 0 ? (
-                <p>No exceptions this semester — meets at its standing slot every teaching week.</p>
-              ) : (
-                <ul>
-                  {exceptionSessions.map((session) => (
-                    <li>
-                      Week {session.week} ({session.date}): now {session.day}{" "}
-                      {session.startTime}–{session.endTime} in {session.room} —{" "}
-                      {session.reason}
-                      <form method="post" action={`/api/exceptions/${session.exceptionId}/cancel`}>
-                        <button type="submit">Cancel, back to standing slot</button>
-                      </form>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          );
-        })
-      }
+      <div class="groups">
+        {
+          roster.map((group) => {
+            const exceptionSessions = group.sessions.filter((s) => s.exceptionId !== null);
+            return (
+              <section aria-labelledby={`group-${group.agent}`}>
+                <h2 id={`group-${group.agent}`}>{group.name}</h2>
+                <p class="slot">
+                  <span class="slot-label">Standing slot</span>
+                  <span class="slot-time">
+                    Every {group.day} {group.startTime}–{group.endTime}
+                  </span>
+                  <span class="slot-meta">{group.tutorName} · {group.room}</span>
+                </p>
+                {exceptionSessions.length === 0 ? (
+                  <p class="muted">No exceptions this semester — meets at its standing slot every teaching week.</p>
+                ) : (
+                  <ul class="exceptions">
+                    {exceptionSessions.map((session) => (
+                      <li>
+                        <span class="pill">Week {session.week} · {session.date}</span>
+                        <span class="exc-when">
+                          Now {session.day} {session.startTime}–{session.endTime} in {session.room}
+                        </span>
+                        <span class="exc-reason">{session.reason}</span>
+                        <form method="post" action={`/api/exceptions/${session.exceptionId}/cancel`}>
+                          <button type="submit">Cancel, back to standing slot</button>
+                        </form>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+            );
+          })
+        }
+      </div>
 
-      <form method="post" action="/api/exceptions">
+      <form method="post" action="/api/exceptions" class="reschedule">
         <fieldset>
           <legend>Reschedule a session</legend>
 
-          <label for="critGroupId">Crit group</label>
-          <select id="critGroupId" name="critGroupId" required>
-            {roster.map((group) => (
-              <option value={group.id}>
-                {group.name} ({group.day} {group.startTime}–{group.endTime})
-              </option>
-            ))}
-          </select>
+          <div class="field span-2">
+            <label for="critGroupId">Crit group</label>
+            <select id="critGroupId" name="critGroupId" required>
+              {roster.map((group) => (
+                <option value={group.id}>
+                  {group.name} ({group.day} {group.startTime}–{group.endTime})
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <label for="week">Teaching week</label>
-          <select id="week" name="week" required>
-            {weeks.map((w) => (
-              <option value={w.week}>
-                Week {w.week} ({w.monday})
-              </option>
-            ))}
-          </select>
+          <div class="field">
+            <label for="week">Teaching week</label>
+            <select id="week" name="week" required>
+              {weeks.map((w) => (
+                <option value={w.week}>
+                  Week {w.week} ({w.monday})
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <label for="day">New day</label>
-          <select id="day" name="day" required>
-            {DAYS.map((day) => (
-              <option value={day}>{day}</option>
-            ))}
-          </select>
+          <div class="field">
+            <label for="day">New day</label>
+            <select id="day" name="day" required>
+              {DAYS.map((day) => (
+                <option value={day}>{day}</option>
+              ))}
+            </select>
+          </div>
 
-          <label for="startTime">New start</label>
-          <input id="startTime" name="startTime" type="time" required />
+          <div class="field">
+            <label for="startTime">New start</label>
+            <input id="startTime" name="startTime" type="time" required />
+          </div>
 
-          <label for="endTime">New end</label>
-          <input id="endTime" name="endTime" type="time" required />
+          <div class="field">
+            <label for="endTime">New end</label>
+            <input id="endTime" name="endTime" type="time" required />
+          </div>
 
-          <label for="room">Room</label>
-          <input id="room" name="room" type="text" placeholder="defaults to the group's usual room" />
+          <div class="field span-2">
+            <label for="room">Room</label>
+            <input id="room" name="room" type="text" placeholder="defaults to the group's usual room" />
+          </div>
 
-          <label for="reason">Reason</label>
-          <input id="reason" name="reason" type="text" required />
+          <div class="field span-2">
+            <label for="reason">Reason</label>
+            <input id="reason" name="reason" type="text" required />
+          </div>
 
-          <button type="submit">Reschedule</button>
+          <button type="submit" class="span-2">Reschedule</button>
         </fieldset>
       </form>
     </main>

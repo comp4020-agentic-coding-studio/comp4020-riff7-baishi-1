@@ -41,9 +41,9 @@ function EventCard({ arg }: { arg: EventContentArg }) {
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="block h-full w-full cursor-pointer overflow-hidden rounded-md px-2 py-1 text-left text-xs leading-tight text-foreground"
+          className="block h-full w-full cursor-pointer border-0 overflow-hidden rounded-md px-2 py-1 text-left text-xs leading-tight text-foreground"
           style={{
-            background: c.bg,
+            background: `color-mix(in srgb, ${c.bar} 18%, var(--surface))`,
             borderLeft: `4px solid ${c.bar}`,
             outline: moved ? `2px dashed ${c.bar}` : undefined,
             outlineOffset: -2,

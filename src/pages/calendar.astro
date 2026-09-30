@@ -2,6 +2,8 @@
 import CritCalendar from "../components/CritCalendar";
 import { initialMonday } from "../lib/calendar";
 import { listRoster, listWeeks, sessionDate } from "../lib/db";
+import ThemeHead from "../components/ThemeHead.astro";
+import SiteNav from "../components/SiteNav.astro";
 import "../styles.css";
 import "../tailwind.css";
 
@@ -37,17 +39,18 @@ const dayAfter = (iso: string) => new Date(Date.parse(`${iso}T00:00:00Z`) + 8640
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="Week-by-week calendar of every crit group's session, with rescheduled sessions marked." />
+    <ThemeHead />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>Crit calendar</title>
   </head>
   <body>
-    <nav aria-label="site">
-      <a href="/">Roster</a>
-      <a href="/calendar/">Calendar</a>
-      <a href="/readme/">About</a>
-    </nav>
+    <SiteNav current="calendar" />
     <main class="wide">
-      <h1>Crit calendar</h1>
+      <div class="page-head">
+        <p class="eyebrow">Week view</p>
+        <h1>Crit calendar</h1>
+        <p class="lede">Every group's session, week by week. Dashed outlines mark sessions moved from their standing slot.</p>
+      </div>
       <CritCalendar
         client:load
         events={events}
@@ -55,7 +58,7 @@ const dayAfter = (iso: string) => new Date(Date.parse(`${iso}T00:00:00Z`) + 8640
         validStart={weeks[0].monday}
         validEnd={dayAfter(lastFriday)}
       />
-      <p><a href="/">Reschedule a session</a> on the roster page.</p>
+      <p class="page-foot"><a href="/">Reschedule a session</a> on the roster page.</p>
     </main>
   </body>
 </html>
